@@ -1,6 +1,6 @@
 # Loan Prediction Project
 
-This project implements a machine learning model for loan prediction, with a complete pipeline from data processing to deployment. The application uses FastAPI for the backend API and Streamlit for the frontend interface.
+This project implements a machine learning model for loan prediction, with a complete pipeline from data processing to deployment. The application uses FastAPI for the backend API and HTML CSS JS for the frontend interface.
 
 ## Project Structure
 
@@ -12,9 +12,7 @@ loan-prediction-project/
 │
 ├── models/                        # Saved models
 │   ├── loan_model.pkl            # Trained model
-│   ├── encoder.pkl               # Categorical encoder
-│   ├── scaler.pkl                # Numerical scaler
-│   └── feature_names.pkl         # Feature names
+
 │
 ├── notebooks/                     # ML experimentation notebooks
 │   └── 01_data_cleaning_and_modeling.ipynb
@@ -25,7 +23,7 @@ loan-prediction-project/
 │       └── loan_model.pkl
 │
 ├── frontend/                      # Streamlit frontend
-│   └── streamlit_app.py
+│   └── index.html
 │
 ├── requirements.txt               # Python dependencies
 ├── Dockerfile                     # Docker instructions
