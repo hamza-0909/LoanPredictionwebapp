@@ -72,15 +72,8 @@ Start the FastAPI server:
 ```bash
 uvicorn app.main:app --reload
 ```
-The API will be available at http://localhost:8000
+The API will be available at http://127.0.0.1:8000 
 
-### 3. Running the Frontend
-
-Start the Streamlit app:
-```bash
-streamlit run frontend/streamlit_app.py
-```
-The frontend will be available at http://localhost:8501
 
 ## API Endpoints
 
@@ -100,21 +93,6 @@ docker build -t loan-prediction .
 docker run -p 8000:8000 loan-prediction
 ```
 
-## Azure Deployment
-
-The project includes a GitHub Actions workflow for automatic deployment to Azure App Service. To set up deployment:
-
-1. Create an Azure App Service
-2. Add the following secrets to your GitHub repository:
-   - `AZURE_CREDENTIALS`: Azure service principal credentials
-   - `DOCKER_HUB_USERNAME`: Docker Hub username
-   - `DOCKER_HUB_ACCESS_TOKEN`: Docker Hub access token
-
-3. Update the following variables in `.github/workflows/azure-deploy.yml`:
-   - `AZURE_WEBAPP_NAME`: Your Azure App Service name
-   - `DOCKER_IMAGE_NAME`: Your Docker image name
-
-4. Push to the main branch to trigger deployment
 
 ## Model Details
 
