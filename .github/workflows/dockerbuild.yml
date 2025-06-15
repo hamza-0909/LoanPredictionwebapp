@@ -1,0 +1,5 @@
+- name: Build and push Docker image
+  run: |
+    docker login ${{ secrets.loanpredictor.azurecr.io  }} -u ${{ secrets.loanpredictor}} -p ${{ secrets.T9YxTjcIadvzg8MAUC7iCjonuFwXWrKhmk5/vmcP3J+ACRCqGlMQ }}
+    docker build -t ${{ secrets.loanpredictor.azurecr.io  }}/myapp:${{ github.sha }} .
+    docker push ${{ secrets.loanpredictor.azurecr.io }}/myapp:${{ github.sha }}
