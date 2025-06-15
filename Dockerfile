@@ -1,16 +1,21 @@
-FROM python:3.9-slim
+# 1. Use base image
+FROM python:3.10-slim
 
+# 2. Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# 3. Copy all app files
+COPY ./api ./api
+COPY ./models ./models
+COPY ./frontend ./frontend
 COPY requirements.txt .
+
+# 4. Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
-COPY . .
-
-# Expose the port the app runs on
+# 5. Expose FastAPI port
 EXPOSE 8000
 
-# Command to run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# 6. Run the app
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
