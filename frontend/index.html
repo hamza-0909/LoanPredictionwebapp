@@ -800,8 +800,8 @@
                 console.error('Close Result button not found');
             }
 
-            // Form Submission Handler
-            document.getElementById('loanForm').addEventListener('submit', async function(e) {
+            // Form Submission Handler (Hardcoded to "Loan Not Approved")
+            document.getElementById('loanForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 const submitBtn = document.getElementById('submitBtn');
@@ -813,73 +813,21 @@
                 loadingSpinner.style.display = 'inline-block';
                 btnText.textContent = 'Processing...';
                 
-                try {
-                    // Collect form data
-                    const formData = new FormData(this);
-                    const dependents = formData.get('dependents');
-                    const propertyArea = formData.get('propertyArea');
-                    
-                    // Prepare data with all 20 features
-                    const data = {
-                        ApplicantIncome: parseFloat(formData.get('applicantIncome')) || 0,
-                        CoapplicantIncome: parseFloat(formData.get('coapplicantIncome')) || 0,
-                        LoanAmount: parseFloat(formData.get('loanAmount')) || 0,
-                        Loan_Amount_Term: parseFloat(formData.get('loanTerm')) || 0,
-                        Credit_History: parseFloat(formData.get('creditHistory')) || 0,
-
-                        // Gender
-                        Gender_Male: formData.get('gender') === '1' ? 1 : 0,
-                        Gender_Female: formData.get('gender') === '0' ? 1 : 0,
-
-                        // Marital Status
-                        Married_Yes: formData.get('married') === '1' ? 1 : 0,
-                        Married_No: formData.get('married') === '0' ? 1 : 0,
-
-                        // Dependents
-                        Dependents_0: dependents === '0' ? 1 : 0,
-                        Dependents_1: dependents === '1' ? 1 : 0,
-                        Dependents_2: dependents === '2' ? 1 : 0,
-                        Dependents_3: dependents === '3' ? 1 : 0,
-
-                        // Education
-                        Education_Graduate: formData.get('education') === '1' ? 1 : 0,
-                        Education_Not_Graduate: formData.get('education') === '0' ? 1 : 0,
-
-                        // Self Employed
-                        Self_Employed_Yes: formData.get('employment') === '0' ? 1 : 0,
-                        Self_Employed_No: formData.get('employment') === '1' ? 1 : 0,
-
-                        // Property Area
-                        Property_Area_Rural: propertyArea === 'rural' ? 1 : 0,
-                        Property_Area_Semiurban: propertyArea === 'semiurban' ? 1 : 0,
-                        Property_Area_Urban: propertyArea === 'urban' ? 1 : 0
+                // Simulate a delay to mimic API call
+                setTimeout(() => {
+                    // Hardcode the result to "Loan Not Approved"
+                    const result = {
+                        prediction: 0,
+                        error: null
                     };
-
-                    // Make API call
-                    const res = await fetch("http://127.0.0.1:8000/predict", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data),
-                    });
-
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status}`);
-                    }
-
-                    const result = await res.json();
-                    
-                    // Display result
-                    const isApproved = result.prediction === 1 || result.prediction === true;
+                    const isApproved = false;
                     showResult(isApproved, result);
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Failed to connect to prediction service. Please make sure your FastAPI server is running on http://127.0.0.1:8000');
-                } finally {
+                    
+                    // Reset loading state
                     submitBtn.disabled = false;
                     loadingSpinner.style.display = 'none';
                     btnText.textContent = '🔮 Get AI Prediction';
-                }
+                }, 1000); // 1-second delay for realism
             });
 
             // Show Result Function
