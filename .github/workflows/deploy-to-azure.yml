@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App
+name: Build and Deploy to Azure Web App
 
 on:
   push:
@@ -8,30 +8,33 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Log in to Azure Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ secrets.loanpredictor.azurecr.io }}
-        username: ${{ secrets.loanpredictor }}
-        password: ${{ secrets.T9YxTjcIadvzg8MAUC7iCjonuFwXWrKhmk5/vmcP3J+ACRCqGlMQ }}
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Using publish profile as creds
 
-    - name: Build and push Docker image
-      run: |
-        docker build -t ${{ secrets.loanpredictor.azurecr.io }}/loan-prediction-app:${{ github.sha }} .
-        docker push ${{ secrets.loanpredictor.azurecr.io }}/loan-prediction-app:${{ github.sha }}
+      - name: Log in to Azure Container Registry (ACR)
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_NAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'loan-prediction-app'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.<publishData><publishProfile profileName="loanpredictionwebapp - Web Deploy" publishMethod="MSDeploy" publishUrl="loanpredictionwebapp-bmb8hrbff2etfbf0.scm.centralus-01.azurewebsites.net:443" msdeploySite="loanpredictionwebapp" userName="$loanpredictionwebapp" userPWD="bTmw2W1uMpl20ypM2L07MBSAr8gtZd4ZEaNqJs7a9ZfyRSmnd0r4tYB0mK8d" destinationAppUrl="https://loanpredictionwebapp-bmb8hrbff2etfbf0.centralus-01.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="https://portal.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="loanpredictionwebapp - FTP" publishMethod="FTP" publishUrl="ftp://waws-prod-dm1-173.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="loanpredictionwebapp\$loanpredictionwebapp" userPWD="bTmw2W1uMpl20ypM2L07MBSAr8gtZd4ZEaNqJs7a9ZfyRSmnd0r4tYB0mK8d" destinationAppUrl="https://loanpredictionwebapp-bmb8hrbff2etfbf0.centralus-01.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="https://portal.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="loanpredictionwebapp - Zip Deploy" publishMethod="ZipDeploy" publishUrl="loanpredictionwebapp-bmb8hrbff2etfbf0.scm.centralus-01.azurewebsites.net:443" userName="$loanpredictionwebapp" userPWD="bTmw2W1uMpl20ypM2L07MBSAr8gtZd4ZEaNqJs7a9ZfyRSmnd0r4tYB0mK8d" destinationAppUrl="https://loanpredictionwebapp-bmb8hrbff2etfbf0.centralus-01.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="https://portal.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="loanpredictionwebapp - ReadOnly - FTP" publishMethod="FTP" publishUrl="ftp://waws-prod-dm1-173dr.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="loanpredictionwebapp\$loanpredictionwebapp" userPWD="bTmw2W1uMpl20ypM2L07MBSAr8gtZd4ZEaNqJs7a9ZfyRSmnd0r4tYB0mK8d" destinationAppUrl="https://loanpredictionwebapp-bmb8hrbff2etfbf0.centralus-01.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="https://portal.azure.com" webSystem="WebSites"><databases /></publishProfile></publishData> }}
-        images: '${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }}'
+      - name: Build and push Docker image to ACR
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }} .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: myloanapp2025 # Replace with your Web App name
+          images: '${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }}'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
