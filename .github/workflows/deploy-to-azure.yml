@@ -1,4 +1,4 @@
-name: Build and Deploy to Azure Web App
+name: Build and Deploy to Azure Web App (Container from ACR)
 
 on:
   push:
@@ -24,12 +24,6 @@ jobs:
 
       - name: Build and push Docker image to ACR
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }} .
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }} -t ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }}
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: loanpredictionwebapp
-          images: '${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:${{ github.sha }}'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/loan-prediction-app:latest
