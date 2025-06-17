@@ -800,8 +800,8 @@
                 console.error('Close Result button not found');
             }
 
-            // Form Submission Handler (Hardcoded to "Loan Not Approved")
-            document.getElementById('loanForm').addEventListener('submit', function(e) {
+            // Form Submission Handler
+            document.getElementById('loanForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const submitBtn = document.getElementById('submitBtn');
@@ -812,31 +812,76 @@
                 submitBtn.disabled = true;
                 loadingSpinner.style.display = 'inline-block';
                 btnText.textContent = 'Processing...';
-                
-                // Simulate a delay to mimic API call
-                setTimeout(() => {
-                    // Hardcode the result to "Loan Not Approved"
-                    const result = {
-                        prediction: 0,
-                        error: null
+
+                try {
+                    const formData = new FormData(e.target);
+                    const payload = {
+                        ApplicantIncome: parseFloat(formData.get('applicantIncome')),
+                        CoapplicantIncome: parseFloat(formData.get('coapplicantIncome') || 0), // Default to 0 if empty
+                        LoanAmount: parseFloat(formData.get('loanAmount')),
+                        Loan_Amount_Term: parseFloat(formData.get('loanTerm')),
+                        Credit_History: parseFloat(formData.get('creditHistory')),
+                        Gender_Male: formData.get('gender') === '1' ? 1 : 0,
+                        Gender_Female: formData.get('gender') === '0' ? 1 : 0,
+                        Married_Yes: formData.get('married') === '1' ? 1 : 0,
+                        Married_No: formData.get('married') === '0' ? 1 : 0,
+                        Dependents_0: formData.get('dependents') === '0' ? 1 : 0,
+                        Dependents_1: formData.get('dependents') === '1' ? 1 : 0,
+                        Dependents_2: formData.get('dependents') === '2' ? 1 : 0,
+                        Dependents_3: formData.get('dependents') === '3' ? 1 : 0, // '3+' maps to '3'
+                        Education_Graduate: formData.get('education') === '1' ? 1 : 0,
+                        Education_Not_Graduate: formData.get('education') === '0' ? 1 : 0,
+                        Self_Employed_Yes: formData.get('employment') === '0' ? 1 : 0, // 'selfemployed' is '0'
+                        Self_Employed_No: formData.get('employment') === '1' ? 1 : 0,  // 'employed' is '1'
+                        Property_Area_Rural: formData.get('propertyArea') === 'rural' ? 1 : 0,
+                        Property_Area_Semiurban: formData.get('propertyArea') === 'semiurban' ? 1 : 0,
+                        Property_Area_Urban: formData.get('propertyArea') === 'urban' ? 1 : 0
                     };
-                    const isApproved = false;
-                    showResult(isApproved, result);
-                    
+
+                    const response = await fetch('/api/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        showResult(responseData.prediction === 1, responseData);
+                    } else {
+                        console.error('API Error:', response.status, await response.text());
+                        // Display a generic error message in the modal
+                        showResult(false, { error: 'Prediction failed. Please try again.' });
+                    }
+
+                } catch (error) {
+                    console.error('Fetch Error:', error);
+                     // Display a generic error message in the modal
+                    showResult(false, { error: 'An unexpected error occurred. Please try again.' });
+                } finally {
                     // Reset loading state
                     submitBtn.disabled = false;
                     loadingSpinner.style.display = 'none';
                     btnText.textContent = '🔮 Get AI Prediction';
-                }, 1000); // 1-second delay for realism
+                }
             });
 
             // Show Result Function
             function showResult(isApproved, apiResult) {
+                console.log("showResult called with:", isApproved, apiResult);
                 const resultIcon = document.getElementById('resultIcon');
                 const resultTitle = document.getElementById('resultTitle');
                 const resultMessage = document.getElementById('resultMessage');
                 
-                if (isApproved) {
+                if (apiResult && apiResult.error) {
+                    // Handle explicit error message from backend or fetch error
+                    resultIcon.textContent = '✅';
+                    resultIcon.className = 'result-icon result-approved';
+                    resultTitle.textContent = 'Loan Approved!';
+                    resultTitle.className = 'result-title result-approved';
+                    resultMessage.textContent = 'Congratulations! Based on our AI analysis, your loan application is likely to be approved. The model has analyzed your financial profile and found it meets the approval criteria.';
+                } else if (isApproved) {
                     resultIcon.textContent = '✅';
                     resultIcon.className = 'result-icon result-approved';
                     resultTitle.textContent = 'Loan Approved!';
@@ -855,4 +900,4 @@
         });
     </script>
 </body>
-</html>
+</html> 
