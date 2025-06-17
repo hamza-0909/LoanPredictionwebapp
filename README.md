@@ -2,38 +2,7 @@
 
 This project implements a machine learning model for loan prediction, with a complete pipeline from data processing to deployment. The application uses FastAPI for the backend API and HTML CSS JS for the frontend interface.
 
-## Project Structure
 
-```
-loan-prediction-project/
-│
-├── data/                          # Raw & processed data
-│   └── train.csv                  # Training dataset
-│
-├── models/                        # Saved models
-│   ├── loan_model.pkl            # Trained model
-
-│
-├── notebooks/                     # ML experimentation notebooks
-│   └── 01_data_cleaning_and_modeling.ipynb
-│
-├── app/                           # FastAPI app
-│   ├── main.py                    # Main FastAPI server
-│   └── model/                     # Model loaded by FastAPI
-│       └── loan_model.pkl
-│
-├── frontend/                      # Streamlit frontend
-│   └── index.html
-│
-├── requirements.txt               # Python dependencies
-├── Dockerfile                     # Docker instructions
-├── .gitignore                     # GitHub version control
-│
-├── mlruns/                        # MLflow experiment logs
-│
-└── .github/                       # GitHub Actions for CI/CD
-    └── workflows/
-        └── azure-deploy.yml       # Azure build & deploy pipeline
 ```
 
 ## Setup and Installation
